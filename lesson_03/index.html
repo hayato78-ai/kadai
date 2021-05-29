@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <script src="../lesson_03/js/index.js"></script> -->
+    <title>Chatアプリ</title>
+</head>
+<body>
+    <!-- コンテンツ表示画面 -->
+    <div>
+        <!-- 名前 -->
+        名前
+        <input type="text" id="username">
+    </div>
+
+    <div></div>
+
+    <div>
+    <!-- テキストエリア -->
+    テキスト
+    <textarea name="" id="text" cols="30" rows="10"></textarea>
+    </div>
+
+    <div>
+        <!-- 送信ボタン -->
+        <button id="send">送信</button>
+    </div>
+
+    <div>
+        <div id="output"></div>
+    </div>
+
+
+
+
+<!--/ コンテンツ表示画面 -->
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+<!--** 以下Firebase **-->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<!-- 6.6.1に該当する箇所はfirebaseのバージョンですので更新されるたびに随時変わります -->
+<script src="https://www.gstatic.com/firebasejs/8.6.2/firebase.js"></script>
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#config-web-app -->
+
+<script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyCEnJbUG55u9XVpPpkKPERqd1JMhcnxgXg",
+        authDomain: "dev20chat-1541a.firebaseapp.com",
+        projectId: "dev20chat-1541a",
+        storageBucket: "dev20chat-1541a.appspot.com",
+        messagingSenderId: "589299263163",
+        appId: "1:589299263163:web:0b48f8122269102ee26b9e",
+        databaseURL: "https://dev20chat-1541a-default-rtdb.firebaseio.com/",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+    //firebaseのデーターベース（保存させる場所）を使いますよ
+    const newPostRef = firebase.database().ref();
+        // ここから下にjqueryの処理を書いて練習します
+
+        // 送信ボタンをクリックされたら次の処理をする
+        $("#send").on("click", function () {
+                // データを登録で送る
+                newPostRef.push({
+                    username: $("#username").val(), //名前
+                    text: $("#text").val(), //テキストエリア
+                })
+                $("#text").val(""); //空にする
+                $("#username").val(""); //空にする
+            });
+
+
+        // 受信処理
+        newPostRef.on("child_added", function(data){
+            //保存されたデータが入ってくる
+            let v = data.val();
+            
+            console.log(v);//変数に入ってくるオブジェクトを全て見る
+
+            let str =  `<p>${v.username}<br>${v.text}</p>`;
+
+            //データをhtmlに埋め込む
+            $("#output").prepend(str);
+        })
+
+        
+        $("text").on("keydown", function (e){
+            console.log(e, "event");
+            // エンターキーを押したら送信処理を実行
+            if (e.keyCode === 13) {
+                newPostRef.push({
+                    username: $("#username").val(), //名前
+                    text: $("#text").val(), //テキストエリア
+                })
+                $("#text").val(""); //空にする
+                $("#username").val("");
+            }
+        })
+        
+</script>
+
+
+
+</body>
+
+</html>
